@@ -15,29 +15,33 @@ model Product {
   name String
   price Int
   description String
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  orders    Order[]
   OrderItem OrderItem[]
 }
 
 model Order {
   id        String   @id @default(uuid())
-  client    String
-  address   String
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientId  String?
+  items     OrderItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  items OrderItem[]
 }
-
 model OrderItem {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   quantity  Int
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+}
+model Client {
+  id String @id @default(uuid())
+  name String
+  address String
+  orders Order[]
 }

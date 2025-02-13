@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './../services/prisma.service';
 import { Product } from '@prisma/client';
+import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
 export class ProductsService {
@@ -9,9 +8,20 @@ export class ProductsService {
   public getAll(): Promise<Product[]> {
     return this.prismaService.product.findMany();
   }
+  public getAllExtended(): Promise<Product[]> {
+    return this.prismaService.product.findMany({
+      include: { orders: true },
+    });
+  }
   public getById(id: Product['id']): Promise<Product | null> {
     return this.prismaService.product.findUnique({
       where: { id },
+    });
+  }
+  public getByIdExtended(id: Product['id']): Promise<Product | null> {
+    return this.prismaService.product.findUnique({
+      where: { id },
+      include: { orders: true },
     });
   }
   public deleteById(id: Product['id']): Promise<Product> {
